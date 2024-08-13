@@ -1,0 +1,48 @@
+2024-08-08 12:42:22 2: SERVER -> CLIENT: 220 smtp.gmail.com ESMTP a640c23a62f3a-a80778c22e0sm169820966b.2 - gsmtp
+
+2024-08-08 12:42:22 1: CLIENT -> SERVER: EHLO localhost
+
+2024-08-08 12:42:22 2: SERVER -> CLIENT: 250-smtp.gmail.com at your service, [197.245.172.130]
+250-SIZE 35882577
+250-8BITMIME
+250-STARTTLS
+250-ENHANCEDSTATUSCODES
+250-PIPELINING
+250-CHUNKING
+250 SMTPUTF8
+
+2024-08-08 12:42:22 1: CLIENT -> SERVER: STARTTLS
+
+2024-08-08 12:42:23 2: SERVER -> CLIENT: 220 2.0.0 Ready to start TLS
+
+2024-08-08 12:42:23 1: CLIENT -> SERVER: EHLO localhost
+
+2024-08-08 12:42:23 2: SERVER -> CLIENT: 250-smtp.gmail.com at your service, [197.245.172.130]
+250-SIZE 35882577
+250-8BITMIME
+250-AUTH LOGIN PLAIN XOAUTH2 PLAIN-CLIENTTOKEN OAUTHBEARER XOAUTH
+250-ENHANCEDSTATUSCODES
+250-PIPELINING
+250-CHUNKING
+250 SMTPUTF8
+
+2024-08-08 12:42:23 1: CLIENT -> SERVER: AUTH LOGIN
+
+2024-08-08 12:42:23 2: SERVER -> CLIENT: 334 VXNlcm5hbWU6
+
+2024-08-08 12:42:23 1: CLIENT -> SERVER: [credentials hidden]
+2024-08-08 12:42:24 2: SERVER -> CLIENT: 334 UGFzc3dvcmQ6
+
+2024-08-08 12:42:24 1: CLIENT -> SERVER: [credentials hidden]
+2024-08-08 12:42:24 2: SERVER -> CLIENT: 535-5.7.8 Username and Password not accepted. For more information, go to
+535 5.7.8  https://support.google.com/mail/?p=BadCredentials a640c23a62f3a-a80778c22e0sm169820966b.2 - gsmtp
+
+2024-08-08 12:42:24 1: SMTP ERROR: Password command failed: 535-5.7.8 Username and Password not accepted. For more information, go to
+535 5.7.8  https://support.google.com/mail/?p=BadCredentials a640c23a62f3a-a80778c22e0sm169820966b.2 - gsmtp
+
+2024-08-08 12:42:24 2: SMTP Error: Could not authenticate.
+2024-08-08 12:42:24 1: CLIENT -> SERVER: QUIT
+
+2024-08-08 12:42:24 2: SERVER -> CLIENT: 221 2.0.0 closing connection a640c23a62f3a-a80778c22e0sm169820966b.2 - gsmtp
+
+2024-08-08 12:42:24 2: SMTP Error: Could not authenticate.

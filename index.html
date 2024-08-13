@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Registration and Attendance</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    
+    .top-bar {
+      background-color: #08948c;
+      width: 100%;
+      height: 65px;
+      position: fixed;
+      top: 0;
+      display: flex;
+      align-items: center;
+      color: white;
+      left: 0;
+    }
+
+    .top-bar img {
+      height: 65px;
+      margin-right: 10px;
+      margin-left: 0;
+    }
+    
+    h2 {
+      text-align: center;
+      margin-top: 80px;
+    }
+    
+    form {
+      max-width: 400px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #f0f0f0;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+    }
+    
+    input[type=text], input[type=email], select {
+      width: calc(100% - 20px);
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    
+    button:hover {
+      background-color: #45a049;
+    }
+    
+    button[type=submit] {
+      background-color: #008CBA;
+    }
+    
+    .hidden {
+      display: none;
+    }
+
+    .message {
+      margin-top: 20px;
+      padding: 10px;
+      border-radius: 5px;
+      display: none;
+    }
+
+    .message.success {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    .message.error {
+      background-color: #f44336;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <img src="https://tenderbulletins.co.za/wp-content/uploads/2020/07/National-Education-Collaboration-Trust-NECT.png" alt="NECT Logo">
+    <h3>NECT Attendance System</h3>
+  </div>
+
+  <h2>Event Registration and Attendance</h2>
+  
+  <!-- Button to Show Registration Form -->
+  <button onclick="showRegistrationForm()">Register</button>
+  
+  <!-- Button to Show Attendance Form -->
+  <button onclick="showAttendanceForm()">Mark Attendance</button>
+  
+  <!-- Registration Form -->
+  <div id="registrationForm" class="hidden">
+    <form id="registrationFormElement" onsubmit="register(event)">
+      <h3>Event Registration</h3>
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" required><br>
+      
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required><br>
+      
+      <label for="event">Event:</label>
+      <select id="event" name="event" required>
+        <option value="" disabled selected>Please select an event</option>
+        <!-- Event options will be populated dynamically -->
+      </select><br>
+      
+      <button type="submit">Register</button>
+      <div id="registrationMessage" class="message success"></div>
+    </form>
+  </div>
+  
+  <!-- Attendance Form -->
+  <div id="attendanceForm" class="hidden">
+    <form id="attendanceFormElement" onsubmit="markAttendance(event)">
+      <h3>Attendance</h3>
+      <label for="uniqueCode">Meeting Code:</label>
+      <input type="text" id="uniqueCode" name="uniqueCode" required>
+      <button type="button" onclick="searchAttendance()">Search</button><br><br>
+      
+      <p>If you haven't registered yet, please <a href="#" onclick="showRegistrationForm()">click here</a> to register.</p>
+      
+      <!-- Display attendance details -->
+      <div id="attendanceDetails" class="hidden">
+        <label>Name:</label>
+        <input type="text" id="attName" name="attName" required><br>
+        
+        <label>Email:</label>
+        <input type="email" id="attEmail" name="attEmail" required><br>
+        
+        <label>Event:</label>
+        <input type="text" id="attEvent" name="attEvent" readonly><br><br>
+        
+        <button type="submit">Submit</button>
+        <div id="attendanceMessage" class="message success"></div>
+      </div>
+    </form>
+  </div>
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script>
+    // Populate events dropdown on page load
+    $(document).ready(function() {
+        $.ajax({
+            url: 'get_events.php',
+            method: 'GET',
+            dataType: 'json',
+            success: function(eventNames) {
+                var dropdown = $('#event');
+                dropdown.empty();
+                dropdown.append('<option value="" disabled selected>Please select an event</option>');
+                $.each(eventNames, function(key, event) {
+                    dropdown.append('<option value="' + event.id + '">' + event.event_name + '</option>');
+                });
+            }
+        });
+    });
+    
+    // Function to show registration form and hide other forms
+    function showRegistrationForm() {
+      $('#registrationForm').removeClass('hidden');
+      $('#attendanceForm').addClass('hidden');
+      $('#attendanceDetails').addClass('hidden');
+      resetForms();
+    }
+    
+    // Function to show attendance form and hide other forms
+    function showAttendanceForm() {
+      $('#attendanceForm').removeClass('hidden');
+      $('#registrationForm').addClass('hidden');
+      resetForms();
+    }
+    
+    // Registration form submission
+    function register(event) {
+      event.preventDefault();
+      $.ajax({
+          url: 'register.php',
+          method: 'POST',
+          data: $('#registrationFormElement').serialize(),
+          success: function(response) {
+              alert(response);
+              resetForms();
+          }
+      });
+    }
+
+    // Search attendance details
+    function searchAttendance() {
+      $.ajax({
+          url: 'search_attendance.php',
+          method: 'POST',
+          data: { uniqueCode: $('#uniqueCode').val() },
+          dataType: 'json',
+          success: function(details) {
+              if (details) {
+                  $('#attName').val(details.name);
+                  $('#attEmail').val(details.email);
+                  $('#attEvent').val(details.event_name);
+                  $('#attendanceDetails').removeClass('hidden');
+                  alert('Meeting details found! Please submit Attendance');
+              } else {
+                  alert('No attendance record found for the provided unique code.');
+                  resetForms();
+              }
+          }
+      });
+    }
+
+    // Submit attendance form
+    function markAttendance(event) {
+      event.preventDefault();
+      $.ajax({
+          url: 'save_attendance.php',
+          method: 'POST',
+          data: $('#attendanceFormElement').serialize(),
+          success: function(response) {
+              alert(response);
+              resetForms();
+          }
+      });
+    }
+    
+    // Function to reset form fields and hide attendance details
+    function resetForms() {
+      $('#registrationFormElement')[0].reset();
+      $('#attendanceFormElement')[0].reset();
+      $('#attendanceDetails').addClass('hidden');
+      $('#attendanceMessage').hide();
+    }
+  </script>
+</body>
+</html>
